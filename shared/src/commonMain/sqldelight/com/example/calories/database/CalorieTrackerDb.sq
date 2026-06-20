@@ -1,0 +1,39 @@
+CREATE TABLE calorie_entry (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount INTEGER NOT NULL,
+    entry_date TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE TABLE user_preference (
+    id INTEGER PRIMARY KEY NOT NULL DEFAULT 1,
+    daily_goal INTEGER NOT NULL DEFAULT 2500,
+    theme TEXT NOT NULL DEFAULT 'system'
+);
+
+selectTodayEntries:
+SELECT * FROM calorie_entry WHERE entry_date = :entryDate ORDER BY created_at ASC;
+
+selectTodayTotal:
+SELECT COALESCE(SUM(amount), 0) FROM calorie_entry WHERE entry_date = :entryDate;
+
+selectHistoryRange:
+SELECT entry_date, SUM(amount) FROM calorie_entry
+WHERE entry_date >= :startDate AND entry_date <= :endDate
+GROUP BY entry_date ORDER BY entry_date ASC;
+
+insertEntry:
+INSERT INTO calorie_entry (amount, entry_date, created_at) VALUES (?, ?, ?);
+
+deleteTodayEntries:
+DELETE FROM calorie_entry WHERE entry_date = :entryDate;
+
+deleteAllEntries:
+DELETE FROM calorie_entry;
+
+getPreferences:
+SELECT * FROM user_preference WHERE id = 1;
+
+upsertPreferences:
+INSERT OR REPLACE INTO user_preference (id, daily_goal)
+VALUES (1, ?);
