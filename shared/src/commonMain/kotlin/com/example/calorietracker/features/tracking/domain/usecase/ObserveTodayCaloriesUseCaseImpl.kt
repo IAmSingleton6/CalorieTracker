@@ -8,6 +8,7 @@ internal class ObserveTodayCaloriesUseCaseImpl(
     private val repository: CalorieRepository,
     private val timeProvider: TimeProvider
 ) : ObserveTodayCaloriesUseCase {
+
     override operator fun invoke(): Flow<Int> {
         return repository.observeTodayTotal(timeProvider.todayDate())
     }

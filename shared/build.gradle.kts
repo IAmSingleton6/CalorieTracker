@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,6 +8,10 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.mockative)
+}
+
+mockative {
+    stubsUnitByDefault = true
 }
 
 kotlin {
@@ -73,6 +76,7 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
+            implementation(libs.mockative)
         }
         jvmMain.dependencies {
             implementation("app.cash.sqldelight:sqlite-driver:${libs.versions.sqlDelight.get()}")
