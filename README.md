@@ -1,46 +1,70 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM).
+# Calorie Tracker
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+A cross-platform calorie tracking app built with **Kotlin Multiplatform (KMP)** and **Compose Multiplatform**, targeting Android, iOS, Desktop (JVM), and Web (Wasm/JS).
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Track your daily calorie intake, view history with charts, and manage your daily goal—all from a shared codebase.
 
-### Running the apps
+## Tech Stack
 
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
+| Technology | Purpose |
+|---|---|
+| **Kotlin 2.3.21** | Language |
+| **Compose Multiplatform 1.11.0** | Shared UI (Material3) |
+| **Kotlin Multiplatform** | Cross-platform targeting |
+| **Koin 4.2.0** | Dependency injection |
+| **SQLDelight 2.3.2** | Local database |
+| **kotlinx-datetime 0.8.0** | Date/time handling |
+| **detekt 1.23.8** | Static analysis |
+| **Turbine / Mockative** | Flow testing / mocking |
 
-- Android app: `./gradlew :androidApp:assembleDebug`
-- Desktop app:
-  - Hot reload: `./gradlew :desktopApp:hotRun --auto`
-  - Standard run: `./gradlew :desktopApp:run`
-- Web app:
-  - Wasm target (faster, modern browsers): `./gradlew :webApp:wasmJsBrowserDevelopmentRun`
-  - JS target (slower, supports older browsers): `./gradlew :webApp:jsBrowserDevelopmentRun`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+## Architecture
 
-### Running tests
+Feature-first Clean Architecture (`UI → Domain → Data` with dependency inversion). Each feature is self-contained in `shared/src/commonMain`:
 
-Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
+- **`tracking/`** — Daily calorie logging, progress bar, quick-add
+- **`history/`** — Bar chart history, stats
+- **`settings/`** — Daily goal management
 
-- Android tests: `./gradlew :shared:testAndroidHostTest`
-- Desktop tests: `./gradlew :shared:jvmTest`
-- Web tests:
-  - Wasm target: `./gradlew :shared:wasmJsTest`
-  - JS target: `./gradlew :shared:jsTest`
-- iOS tests: `./gradlew :shared:iosSimulatorArm64Test`
+Shared core modules live under `shared/src/commonMain/core/`: `common`, `database`, `designsystem`.
 
----
+A full architecture guide is in [architecture.md](architecture.md).
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+## Modules
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+| Module | Platform |
+|---|---|
+| `:shared` | Common code (Android, iOS, JVM, Wasm/JS) |
+| `:androidApp` | Android entry point |
+| `:desktopApp` | Desktop (JVM) entry point |
+| `iosApp/` | iOS Xcode project |
+
+## Setup
+
+1. **Clone the repo**
+   ```bash
+   git clone <repo-url>
+   cd CalorieTracker
+   ```
+
+2. **Open in Android Studio** (or IntelliJ IDEA with KMP plugin)
+
+3. **Run the app**
+
+   | Platform | Command |
+   |---|---|
+   | Android | `./gradlew :androidApp:assembleDebug` |
+   | Desktop | `./gradlew :desktopApp:run` |
+   | Desktop (hot reload) | `./gradlew :desktopApp:hotRun --auto` |
+   | Web (Wasm) | `./gradlew :shared:wasmJsBrowserDevelopmentRun` |
+   | iOS | Open `iosApp/` in Xcode |
+
+4. **Run tests**
+   ```bash
+   ./gradlew allTests
+   ```
+   Or per-platform: `:shared:jvmTest`, `:shared:iosSimulatorArm64Test`, `:shared:androidHostTest`, etc.
+
+## Code Quality
+
+- **detekt** runs on `preBuild` via Git hooks (installed automatically)
+- Manual run: `./gradlew detekt`
